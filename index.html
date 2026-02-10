@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronos | High-Precision Life Analytics</title>
+    <meta name="description" content="Calculate your exact age in years, months, days, hours, minutes, and seconds with real-time tracking.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f9; color: #1e293b; overflow-x: hidden; }
+        
+        /* Realistic Soft Shadow UI */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 20px 20px 60px #d1d9e6, -20px -20px 60px #ffffff;
+        }
+
+        /* Smooth Date Input Styling */
+        input[type="date"] {
+            appearance: none;
+            -webkit-appearance: none;
+            color: #475569;
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card {
+            background: #ffffff;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .live-pulse {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="max-w-6xl mx-auto px-8 py-8 flex justify-between items-center">
+        <div class="text-2xl font-800 text-indigo-600 font-bold tracking-tighter">CHRONOS<span class="text-gray-300">.</span></div>
+        <div class="flex space-x-8 text-sm font-bold uppercase tracking-widest text-gray-400">
+            <a href="#" onclick="showPage('home')" class="hover:text-indigo-600 transition-all">Home</a>
+            <a href="#" onclick="showPage('about')" class="hover:text-indigo-600 transition-all">About</a>
+            <a href="#" onclick="showPage('contact')" class="hover:text-indigo-600 transition-all">Contact</a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6">
+        
+        <section id="home" class="tab-content active">
+            <div class="grid lg:grid-cols-12 gap-12 items-start">
+                
+                <div class="lg:col-span-5">
+                    <h1 class="text-5xl font-extrabold mb-6 leading-tight">Every <span class="text-indigo-600">Second</span> Counts.</h1>
+                    <div class="glass-card rounded-[40px] p-10">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Select Your Birth Date</label>
+                        <div class="relative mb-6">
+                            <input type="date" id="dob" 
+                                class="w-full bg-gray-50 p-5 rounded-2xl border-2 border-transparent focus:border-indigo-500 focus:bg-white transition-all text-lg font-semibold shadow-inner">
+                        </div>
+                        <button onclick="startCalculation()" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl shadow-xl hover:bg-indigo-700 transition-all active:scale-95 text-lg">
+                            Begin Life Analysis
+                        </button>
+                    </div>
+                </div>
+
+                <div id="results" class="lg:col-span-7 opacity-0 pointer-events-none transition-all duration-700">
+                    <div class="glass-card rounded-[40px] p-10">
+                        <div class="flex justify-between items-center mb-8">
+                            <h2 class="text-xl font-bold">Life Report</h2>
+                            <div class="flex items-center text-xs font-bold text-gray-400 uppercase">
+                                <span class="live-pulse"></span> Live Precision Tracking
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 mb-8">
+                            <div class="stat-card p-6 rounded-3xl border border-gray-100 text-center">
+                                <span id="y" class="block text-4xl font-extrabold text-indigo-600">0</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Years</span>
+                            </div>
+                            <div class="stat-card p-6 rounded-3xl border border-gray-100 text-center">
+                                <span id="m" class="block text-4xl font-extrabold text-indigo-600">0</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Months</span>
+                            </div>
+                            <div class="stat-card p-6 rounded-3xl border border-gray-100 text-center">
+                                <span id="d" class="block text-4xl font-extrabold text-indigo-600">0</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Days</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 mb-8">
+                            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl">
+                                <span class="text-sm font-bold text-gray-500 uppercase">Total Hours lived</span>
+                                <span id="totalH" class="text-lg font-extrabold font-mono">--</span>
+                            </div>
+                            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl">
+                                <span class="text-sm font-bold text-gray-500 uppercase">Total Minutes lived</span>
+                                <span id="totalM" class="text-lg font-extrabold font-mono text-purple-600">--</span>
+                            </div>
+                            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl">
+                                <span class="text-sm font-bold text-gray-500 uppercase">Total Seconds lived</span>
+                                <span id="totalS" class="text-lg font-extrabold font-mono text-pink-600">--</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 bg-indigo-50 rounded-2xl">
+                                <p class="text-[10px] font-bold text-indigo-400 uppercase">Next Birthday In</p>
+                                <p class="text-xl font-bold text-indigo-900"><span id="next">--</span> Days</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-2xl">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Zodiac</p>
+                                <p id="zod" class="text-xl font-bold text-gray-800">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="tab-content">
+            <div class="max-w-3xl mx-auto glass-card rounded-[40px] p-12 mt-10">
+                <h2 class="text-3xl font-bold mb-6">About Chronos Analytics</h2>
+                <p class="text-gray-500 leading-relaxed mb-6">Chronos is a professional web utility built for absolute precision. We use high-frequency JavaScript intervals to calculate life duration down to the millisecond.</p>
+                <div class="grid grid-cols-2 gap-8 text-sm font-bold text-indigo-600">
+                    <div>✓ SECURE: No data leaves your browser</div>
+                    <div>✓ PRECISE: Leap-year adjusted engine</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="tab-content">
+            <div class="max-w-3xl mx-auto glass-card rounded-[40px] p-12 mt-10">
+                <h2 class="text-3xl font-bold mb-6">Technical Support</h2>
+                <form class="space-y-4">
+                    <input type="text" placeholder="Inquiry Name" class="w-full p-5 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-indigo-400 border-none">
+                    <textarea placeholder="How can we help you?" rows="4" class="w-full p-5 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-indigo-400 border-none"></textarea>
+                    <button type="button" class="bg-black text-white px-10 py-4 rounded-2xl font-bold hover:opacity-80 transition-all">Submit Request</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-20 py-10 text-center border-t border-gray-200">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">&copy; 2026 Chronos | A Professional Utility</p>
+    </footer>
+
+    <script>
+        let timerInterval;
+
+        function showPage(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function getZodiac(d, m) {
+            const signs = ["Capricorn", "Aquarius", "Pisces", "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius"];
+            const boundaries = [20, 19, 20, 20, 21, 21, 22, 23, 23, 23, 22, 21];
+            return d > boundaries[m] ? signs[(m + 1) % 12] : signs[m];
+        }
+
+        function startCalculation() {
+            const dobVal = document.getElementById('dob').value;
+            if(!dobVal) return alert("Please select your birth date first!");
+
+            // Reveal results
+            const resArea = document.getElementById('results');
+            resArea.classList.remove('opacity-0', 'pointer-events-none');
+            resArea.classList.add('opacity-100', 'pointer-events-auto');
+
+            // Clear previous interval if exists
+            if(timerInterval) clearInterval(timerInterval);
+
+            // Start Live Timer
+            timerInterval = setInterval(() => {
+                const dob = new Date(dobVal);
+                const now = new Date();
+                
+                // Diff in milliseconds
+                const diff = now - dob;
+
+                // 1. Precise Age Breakdown
+                let years = now.getFullYear() - dob.getFullYear();
+                let months = now.getMonth() - dob.getMonth();
+                let days = now.getDate() - dob.getDate();
+
+                if (days < 0) {
+                    months--;
+                    days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+                }
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                // 2. Total Cumulative Units
+                const totalSeconds = Math.floor(diff / 1000);
+                const totalMinutes = Math.floor(totalSeconds / 60);
+                const totalHours = Math.floor(totalMinutes / 60);
+
+                // 3. Next Birthday Countdown
+                let nextBday = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+                if (nextBday < now) nextBday.setFullYear(now.getFullYear() + 1);
+                const nextDays = Math.ceil((nextBday - now) / (1000 * 60 * 60 * 24));
+
+                // DOM Update
+                document.getElementById('y').innerText = years;
+                document.getElementById('m').innerText = months;
+                document.getElementById('d').innerText = days;
+                document.getElementById('totalH').innerText = totalHours.toLocaleString();
+                document.getElementById('totalM').innerText = totalMinutes.toLocaleString();
+                document.getElementById('totalS').innerText = totalSeconds.toLocaleString();
+                document.getElementById('next').innerText = nextDays;
+                document.getElementById('zod').innerText = getZodiac(dob.getDate(), dob.getMonth());
+
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
